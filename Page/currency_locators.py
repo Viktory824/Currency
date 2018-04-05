@@ -7,7 +7,7 @@ class CurrencyLocators:
     def value_from(value):
         return (
             By.XPATH,
-            "//select[@name='converterFrom']/ancestor::div[@class='rates-aside__filter-block-line-right']//"
+            "*//select[@name='converterFrom']/ancestor::div[@class='rates-aside__filter-block-line-right']//"
             "div[@class='visible']/span[contains(text(),'{0}')]".format(value))
 
     @staticmethod
@@ -25,7 +25,8 @@ class CurrencyLocators:
 
     convert_button = (By.XPATH, "//button[@class='rates-button']")
 
-    convert_result_inital_value = (By.XPATH, "//span[@class='rates-converter-result__total-from']")
+    convert_result_inital_value = (By.XPATH, "//div[@class='rates-converter-result__total']"
+                                             "/span[@class='rates-converter-result__total-from']")
 
     convert_result_currency_to_name = (By.XPATH, "//span[@class='rates-converter-result__total-to']")
 
