@@ -1,7 +1,6 @@
 import re
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from Page.currency_locators import CurrencyLocators
 
 
@@ -24,6 +23,7 @@ class CurrencyPage(BasePage):
     def select_value_convert_from_dropdown(self):
         self.driver.driver.find_element(*CurrencyLocators.convert_from_dropdown).click()
         element = CurrencyLocators.value_from(self.value_from)
+        self.scroll_to_element()
         self.driver.driver.find_element(*element).click()
 
     def select_value_convert_to_dropdown(self):
@@ -47,16 +47,18 @@ class CurrencyPage(BasePage):
         if convert_result_init_val:
             convert_result_init_val = self.driver.driver.find_element(
                 *CurrencyLocators.convert_result_inital_value).text
-        return convert_result_init_val.split(' ')
+        return str(convert_result_init_val.replace(' ', '')).split(',')
 
     def get_convert_result_init_value(self):
-        return str(self.convert_result_init_value_and_currency()[0]).replace(',', '.')
+        return int(self.convert_result_init_value_and_currency()[0].replace(',', '.'))
 
     def get_convert_result_currency_name(self):
-        return self.convert_result_init_value_and_currency()[1]
+        val = self.convert_result_init_value_and_currency()[1]
+        list_of_val = re.findall(r'[A-Za-z]{3}', val)
+        return list_of_val[0]
 
     def check_result_currency_inital_value(self):
-        return self.get_convert_result_init_value() == '%.2f' % self.currency_value
+        return int(self.get_convert_result_init_value()) == self.currency_value
 
     def check_result_currency_from_name(self):
         return self.get_convert_result_currency_name() == self.value_from
@@ -64,7 +66,7 @@ class CurrencyPage(BasePage):
     def check_result_currency_to_name(self):
         convert_result_currency_to_name = \
             self.driver.driver.find_element(*CurrencyLocators.convert_result_currency_to_name).text
-        result_currency_to_name = str(convert_result_currency_to_name).split(' ')[1]
+        result_currency_to_name = re.findall(r'[A-Za-z]{3}', convert_result_currency_to_name)[0]
         return result_currency_to_name == self.value_to
 
     def get_current_value_from_dropdown_to(self):
@@ -79,5 +81,6 @@ class CurrencyPage(BasePage):
         return self.value_from == re.sub(' ', '', currency_from_name)
 
     def check_value_to_convert(self):
-        currency_to_name = str(self.driver.driver.find_element(*CurrencyLocators.currency_to_with_rub).text).split('/')[0]
+        currency_to_name = str(self.driver.driver.find_element(*CurrencyLocators.currency_to_with_rub).text).split('/')[
+            0]
         return self.value_to == re.sub(' ', '', currency_to_name)
