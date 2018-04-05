@@ -1,5 +1,7 @@
 import allure
 import pytest
+import os
+import csv
 from conftest import *
 from Page.currency_page import CurrencyPage
 
@@ -24,7 +26,7 @@ def get_currency_names():
         return currency_values_array
 
 
-class Test1:
+class TestCurrency:
     currency_name_from = get_currency_names()
     currency_value = get_currency_values()
     currency_name_to = currency_name_from
@@ -33,7 +35,7 @@ class Test1:
     @pytest.mark.parametrize("currency_from", currency_name_from)
     @pytest.mark.parametrize("currency_value", currency_value)
     @pytest.mark.parametrize("currency_to", currency_name_to)
-    def test_converter_currency(self, driver_manager, currency_from='EUR', currency_value=1, currency_to='CHF'):
+    def test_converter_currency(self, driver_manager, currency_from, currency_value, currency_to):
 
         if currency_from == currency_to:
             pytest.skip()
@@ -49,7 +51,7 @@ class Test1:
         with allure.step('Step_3: Выбрать из списка название валюты, в которую будет происходить конвертация'):
             converter.select_value_convert_to_dropdown()
         with allure.step('Step_4: Нажать на кнопку \'Вы получите\' '):
-            converter.scroll_to_element()
+            converter.scroll_to_page_end()
             converter.click_to_convert_button()
         with allure.step('Step_5: В блоке \'Вы получите\' размер конвертируемой валюты совпадает с заданным'):
             assert converter.check_result_currency_inital_value()
@@ -60,10 +62,10 @@ class Test1:
 
     @allure.testcase('Проверка ввода одинаковых названий валют')
     @pytest.mark.parametrize("currency_from", currency_name_from)
-    def test_check_change_currency(self, driver_manager, currency_from='EUR', currency_value=1):
+    def test_check_change_currency(self, driver_manager, currency_from):
 
         converter = CurrencyPage(driver_manager,
-                                 currency_value,
+                                 100,
                                  currency_from,
                                  currency_from)
         with allure.step('Step_1: Выбрать из списка "из" название валюты, из которой планируется конвертация'):
@@ -78,9 +80,12 @@ class Test1:
             assert converter.get_current_value_from_dropdown_from() == inital_value_to_value
 
     @allure.testcase('Перевод из одной иностранной валюты в другую')
-    def test_check_foreign_currency(self, driver_manager, currency_from='EUR', currency_value=1, currency_to='CHF'):
+    @pytest.mark.parametrize("currency_from", currency_name_from)
+    @pytest.mark.parametrize("currency_value", currency_value)
+    @pytest.mark.parametrize("currency_to", currency_name_to)
+    def test_check_foreign_currency(self, driver_manager, currency_from, currency_value, currency_to):
 
-        if currency_from == 'RUB' or currency_to == 'RUB':
+        if currency_from == 'RUB' or currency_to == 'RUB' or currency_from == currency_to:
             pytest.skip()
 
         converter = CurrencyPage(driver_manager,
