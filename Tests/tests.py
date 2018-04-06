@@ -8,7 +8,7 @@ from Page.currency_page import CurrencyPage
 
 # @pytest.fixture(autouse=True)
 def get_currency_values():
-    with open(os.path.abspath('../positive_values.csv')) as csvfile:
+    with open(os.path.realpath('../positive_values.csv')) as csvfile:
         rows = csv.reader(csvfile)
         currency_array = []
         for item in rows:
@@ -18,7 +18,7 @@ def get_currency_values():
 
 # @pytest.fixture(autouse=True)
 def get_currency_names():
-    with open(os.path.abspath('../currencies.csv')) as csvfile:
+    with open(os.path.realpath('../currencies.csv')) as csvfile:
         currency_values_array = []
         rows = csv.reader(csvfile)
         for item in rows:
