@@ -2,7 +2,6 @@ import allure
 import pytest
 import os
 import csv
-from conftest import *
 from Page.currency_page import CurrencyPage
 
 
